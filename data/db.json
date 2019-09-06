@@ -1,0 +1,14 @@
+{
+	"servers": {
+		"id" : {
+			"hackerworld":"371347921863573505",
+			"cleverbot":"502595700954234890"
+		}
+	},
+	"filePath": {
+		"rules": {
+			"hackerworld":"./data/rule.hw.txt",
+			"cleverbot":"./data/rule.cb.txt"
+		}
+	}
+}
