@@ -41,72 +41,7 @@ var db = require("./data/db.json")
     message.channel.send(`Playing Despacito by Luis Fonsi ft. Daddy Yankee`)
   }
 }); */
-client.on("message", (message) => {
-  // Message Filter
-  fs.readFile("./data/bannedTerms.json", 'utf8', function(err, termData) {
-    if(err) return message.channel.send(strings.error_occured + err)
-    termData = JSON.parse(termData)
-    if(termData.includes(message.content)) {
-      message.delete(0).then( () => {
-        message.channel.send("That URL is banned, " + message.author.toString())
-      })
-      
-      return;
-    }
-    if(message.content.includes(termData)) {
-      message.delete(0).then( () => {
-        message.channel.send("That URL is banned, " + message.author.toString())
-      })
-      
-      return;
-    }
-    return;
-  });
-return;
-}); 
-client.on("message", (message) => {
 
-	if(message.guild.id == db.servers.id.cleverbot) {
-		 	if(message.author.id == client.user.id) return;
-		 	
-		 	id = message.id
-		    content = message.content
-		    var timestamp = Date.now()
-		
-		    var channel = client.channels.find("id", "569610916782669844")
-		    var embed = new Discord.RichEmbed()
-		      .setTitle("Message Log")
-		      .setDescription(content)
-		      .addField("Message ID", id)
-		      .addField("Author ID", message.author.id)
-		      .addField("Author Tag", message.author.tag)
-		      .addField("Channel ID", message.channel.id)
-		      .addField("Channel Name", message.channel.name)
-		      .setURL(`https://discordapp.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`)
-		      .setFooter(moment().format('MMMM Do YYYY, h:mm:ss a'))
-		      channel.send(embed)
-    }
-    if(message.guild.id == db.servers.id.hackerworld) {
-    		if(message.author.id == client.user.id) return;
-		    
-		    id = message.id
-		    content = message.content
-		    var timestamp = Date.now()
-			
-		    var channel = client.channels.find("id", "569609651017089035")
-		    var embed = new Discord.RichEmbed()
-		      .setTitle("Message Log")
-		      .setDescription(content)
-		      .addField("Message ID", id)
-		      .addField("Author ID", message.author.id)
-		      .addField("Author Tag", message.author.tag)
-		      .addField("Channel ID", message.channel.id)
-		      .addField("Channel Name", message.channel.name)
-		      .setURL(`https://discordapp.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`)
-		      .setFooter(moment().format('MMMM Do YYYY, h:mm:ss a'))
-		      channel.send(embed)
-    }
-})
 
 /*client.on("message", (message) => {
   message.guild.member.forEach( (member,id) => {
@@ -150,7 +85,6 @@ client.on("message", (message) => {
           if(message.guild.id == db.servers.id.cleverbot) {
     
             const messageRole = message.guild.roles.find(role => role.name === "CleverMember")
-            const messageRoleExists = message.guild.roles.exists(role => role.name === "CleverMember")
           
             
               if(message.member.roles.has(messageRole.id)) return;
@@ -160,20 +94,60 @@ client.on("message", (message) => {
             }
             if(message.guild.id == db.servers.id.hackerworld) {
                 const messageRole = message.guild.roles.find(role => role.name === "Hackers")
-              const messageRoleExists = message.guild.roles.exists(role => role.name === "Hackers")
           
               if(message.member.roles.has(messageRole.id)) return;
           
               message.member.addRole(messageRole)
-            
+            }
+            if(message.guild.id == db.servers.id.fishbate) {
+              const messageRole = message.guild.roles.find(role => role.name === "Verified Buffoon")
+
+              if(message.member.roles.has(messageRole.id)) return;
+
+              message.member.addRole(messageRole)
             }
 
+          return;
+        }
+        if(cmd.startsWith(`${prefix} announce`)) {
+          
+          if (!message.member.hasPermission('MANAGE_MESSAGES')) return message.channel.send("You are not authorized to use this command");
+    
+    if(!args[2]) return;
+
+    var channelID = args[2]
+        var Channel = client.channels.find(channel => channel.id === channelID)
+
+        if(channelID.length < 1) {
+            Channel = client.channels.find(channel => channel.id === message.channel.id)
+        }
+        
+        if (channelID.startsWith('<#') && channelID.endsWith('>')) {
+            Channel = client.channels.find(channel => channel.id === channelID.substr(2).slice(0, -1))
+        }
+   
+        var announcementMsg = new Discord.RichEmbed()
+            .setColor(config.color)
+            .setTitle(`Announcement from ${message.author.tag}`)
+            .setDescription(message.content.split(/\s+/g).slice(3).join(" "))
+            .setFooter(`${moment().format('MMMM Do YYYY, h:mm:ss a')}`)
+
+    Channel.send({embed: announcementMsg}).then( () => {
+        message.delete().then( () => {
+            message.channel.send("Announcement sent :white_check_mark:").then( () => {
+                setTimeout( () => {
+                    message.delete()
+                }, 1000)
+            })
+        })
+        
+    })
           return;
         }
         if(cmd.startsWith(`${prefix} info`)) {
         	var info = new Discord.RichEmbed()
 		    .setTitle(client.user.username)
-		    .addField('Owner', '`' + client.users.get('270375857384587264').tag, true)
+		    .addField('Owner', '`' + client.users.get('270375857384587264').tag + '`', true)
 		    .addField('Library', '[Discord.JS](https://discord.js.org/)', true )
 		    .addField('Language', '[NodeJS](https://nodejs.org/)', true)
 		    .setThumbnail(client.user.displayAvatarURL)
@@ -203,112 +177,82 @@ client.on("message", (message) => {
 		    return;
         }
         if(cmd.startsWith(`${prefix} rules`)) {
-        	console.log('Beginning')
-    var r = message.content.split(' ').slice(1).join(' ')    
-    var rulesToSet = r.split("-content");
- 
+
+        var r = message.content.split(' ').slice(1).join(' ')    
+        var rulesToSet = r.split("-set");
   
-    if(r[1].length < 1 || !r[1] || !rulesToSet[0] || !rulesToSet[1]) {
-        console.log('if no ruleset')
+        if(r[1].length < 1 || !r[1] || !rulesToSet[0] || !rulesToSet[1]) {
+
+        var fileToRead = null
         if(message.guild.id == db.servers.id.hackerworld) {
-			fs.exists(`./data/rule.hw.txt`, function(exists) {
-            if (exists) {
-                console.log('if exists')
-                fs.readFile(`./data/rule.hw.txt`, 'utf8', function(err, data) {
-                    console.log('read file')
-                    if (err) {
-                        return console.log(err)
-                    }
-                    var ruled = new Discord.RichEmbed()
-                        .setColor(config.embedcolor)
-                        .setTitle(message.guild.name + " Rules")
-                        .setDescription(data)
-                        .setAuthor(message.guild.name, message.guild.iconURL)
-                    message.channel.send({embed: ruled})
-                    console.log('send data')
-                  });
-            } else {
-                message.channel.send("You do not have any rules set for this server. You can use `rules set <rules>` to set your server rules.")
-                console.log('no file')
-            }
-        });
-        return;        
+          fileToRead = db.filePath.rules.hackerworld
         }
         if(message.guild.id == db.servers.id.cleverbot) {
-			fs.exists(`./data/rule.cb.txt`, function(exists) {
-            if (exists) {
-                console.log('if exists')
-                fs.readFile(`./data/rule.cb.txt`, 'utf8', function(err, data) {
-                    console.log('read file')
-                    if (err) {
-                        return console.log(err)
-                    }
-                    var ruled = new Discord.RichEmbed()
-                        .setColor(config.embedcolor)
-                        .setTitle(message.guild.name + " Rules")
-                        .setDescription(data)
-                        .setAuthor(message.guild.name, message.guild.iconURL)
-                    message.channel.send({embed: ruled})
-                    console.log('send data')
-                  });
-            } else {
-                message.channel.send("You do not have any rules set for this server. You can use `rules set <rules>` to set your server rules.")
-            }
-        });
-        return;        
+          fileToRead = db.filePath.rules.cleverbot
         }
+        if(message.guild.id == db.servers.id.fishbate) {
+          fileToRead = db.filePath.rules.fishbate
+        }
+        if(!fs.existsSync(`${fileToRead}`)) return message.channel.send("No rules have been set for this server.")
+
+        try {
+        fs.readFile(`${fileToRead}`, 'utf8', function(err, data) {
+          if (err) {
+            return console.log(err)
+        }
+                var r = new Discord.RichEmbed()
+                .setColor(config.embedcolor)
+                .setTitle(message.guild.name + " Rules")
+                .setDescription(data)
+                .setAuthor(message.guild.name, message.guild.iconURL)
+                .setFooter("To set rules, use @HackerSupport rules -set No naughty stuff")
+
+                message.channel.send({embed: r})
+        })
+      } catch (ex) {
+        message.channel.send(`An unexpected error has occurred: ${ex}`)
+        return;
+      }
         
-        }
+      }
      
-        
-    if(args[2] === '-content') {
+    if(args[2] === '-set') {
         if (!message.member.hasPermission('MANAGE_GUILD')) return message.channel.send('MANAGE_GUILD permission required').catch(console.error);
 
-        if(!rulesToSet) return;
+        if(!rulesToSet) return message.channel.send("To set rules, use `@HackerSupport rules -set No naughty stuff`");
+
+
+        var newRules = rulesToSet[1]
         
-        function writeRules(serv) {
-        	
-        	if(!serv) throw console.error("No server provided")
-        	
-        	var newRules = rulesToSet[1]
-        	
-        	function rulesSet() {
-        	message.channel.send('Rules have been set!')
-        	}
-        	
-        	if(serv.includes("clev")) {
-        		
-        		var rulePath = db.filePath.rules.cleverbot
-        		
-        		fs.writeFile(rulePath, newRules, function(err) {
+        var fileToWrite = null
+          if(message.guild.id == db.servers.id.hackerworld) {
+            fileToWrite = db.filePath.rules.hackerworld
+          }
+          if(message.guild.id == db.servers.id.cleverbot) {
+            fileToWrite = db.filePath.rules.cleverbot
+          }
+          if(message.guild.id == db.servers.id.fishbate) {
+            fileToWrite = db.filePath.rules.fishbate
+          }
+          try {
+            fs.writeFile(fileToWrite, newRules, function(err) {
 		            
-		            if(err) return console.log(err);
-		        rulesSet();
-		            }); 
-       
-        		return;
-        	}
-        	if(serv.includes("hack")) {
-        	
-        		var rulePath = db.filePath.rules.hackerworld
-        		
-        		fs.writeFile(rulePath, newRules, function(err) {
-		            
-		            if(err) return console.log(err);
-		        rulesSet();
-		            }); 
-       
-        		
-        		return;
-        	}
-        }
-        if(guild.id == db.servers.id.hackerworld) return writeRules("hackerworld")
-        if(guild.id == db.servers.id.cleverbot) return writeRules("cleverbot")
-        
+              if(err) return console.log(err);
+              
+              }); 
+          } catch (ex) {
+            message.channel.send(`An unexpected error has occurred: ${ex}`)
+            return;
+          }
+           
+
         }
         	return;
         }
         if(cmd.startsWith(`${prefix} suggestion`)) {
+
+          if(message.guild.id !== db.servers.id.hackerworld && message.guild !== db.servers.id.cleverbot) return message.channel.send("This server is not authorized to use this command.")
+
         	var sug = message.content.split(' ').slice(1).join(' ')
     const suggestChannel = message.guild.channels.find(channel => channel.name === "suggestions")
           sug = sug.slice(10);
@@ -354,6 +298,7 @@ client.on("message", (message) => {
         	return;
         }
     if(cmd.startsWith(`${prefix} bugreport`)) {
+      if(message.guild.id !== db.servers.id.hackerworld && message.guild !== db.servers.id.cleverbot) return message.channel.send("This server is not authorized to use this command.")
     	var bug = message.content.split(' ').slice(1).join(' ')
     const bugReportChannel = message.guild.channels.find(channel => channel.name === "bug-reports")
     bug = bug.slice(9);

@@ -2,13 +2,15 @@
 	"servers": {
 		"id" : {
 			"hackerworld":"371347921863573505",
-			"cleverbot":"502595700954234890"
+			"cleverbot":"502595700954234890",
+			"fishbate": "673625880580587522"
 		}
 	},
 	"filePath": {
 		"rules": {
 			"hackerworld":"./data/rule.hw.txt",
-			"cleverbot":"./data/rule.cb.txt"
+			"cleverbot":"./data/rule.cb.txt",
+			"fishbate":"./data/rule.fb.txt"
 		}
 	}
 }
